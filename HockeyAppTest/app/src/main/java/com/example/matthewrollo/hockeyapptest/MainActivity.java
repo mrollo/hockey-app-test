@@ -1,11 +1,14 @@
 package com.example.matthewrollo.hockeyapptest;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
@@ -26,6 +29,16 @@ public class MainActivity extends ActionBarActivity {
                 throw new RuntimeException("This should crash the app and give a report in HockeyApp");
             }
         });
+
+        try {
+            PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            int versionNumber = pinfo.versionCode;
+            String versionName = pinfo.versionName;
+            TextView appVersionTextView = (TextView) findViewById(R.id.appVersionTextView);
+            appVersionTextView.setText(versionNumber + " - " + versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 
