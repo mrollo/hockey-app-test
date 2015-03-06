@@ -4,6 +4,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.CrashManagerListener;
+import net.hockeyapp.android.UpdateManager;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +18,14 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button crashMeButton = (Button) findViewById(R.id.crash_me_button);
+        crashMeButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                throw new RuntimeException("This should crash the app and give a report in HockeyApp");
+            }
+        });
     }
 
 
@@ -35,5 +49,27 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkForCrashes();
+        checkForUpdates();
+    }
+
+    private void checkForCrashes() {
+        CrashManager.register(this, "73d5739cce511e9246e8d8e4f50f2969", new CrashManagerListener() {
+            @Override
+            public boolean shouldAutoUploadCrashes() {
+                // don't prompt user to upload crash data
+                return true;
+            }
+        });
+    }
+
+    private void checkForUpdates() {
+        // Remove this for store builds!
+        UpdateManager.register(this, "73d5739cce511e9246e8d8e4f50f2969");
     }
 }
